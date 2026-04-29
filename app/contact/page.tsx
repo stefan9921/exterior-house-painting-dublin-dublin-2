@@ -1,15 +1,40 @@
 import type { Metadata } from "next";
 import { business } from "@/lib/business";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { JsonLd, breadcrumbSchema } from "@/components/JsonLd";
+
+const PAGE_URL = `${business.siteUrl}/contact/`;
 
 export const metadata: Metadata = {
-  title: "Contact Us",
-  description:
-    "Call +353 1 230 8892, email info@exteriorhousepaintingdublin.ie or visit 77 Sir John Rogerson's Quay, Dublin 2. Free quotes, 7-day availability.",
+  title: "Contact Us | Exterior House Painting Dublin",
+  description: `Call ${business.phoneDisplay}, email ${business.email} or visit ${business.street}, ${business.city}. Free quotes within 24 hours, 7 days a week.`,
+  alternates: { canonical: "/contact/" },
+  openGraph: {
+    title: "Contact Us | Exterior House Painting Dublin",
+    description:
+      "Call, email or visit our Dublin 2 office. Free written painting quotes within 24 hours, 7 days a week.",
+    url: PAGE_URL,
+  },
 };
 
 export default function ContactPage() {
+  const trail = [
+    { name: "Home", href: "/" },
+    { name: "Contact", href: "/contact/" },
+  ];
+
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema(
+          trail.map((t) => ({
+            name: t.name,
+            url: `${business.siteUrl}${t.href}`,
+          }))
+        )}
+      />
+      <Breadcrumbs trail={trail} />
+
       <section className="soft-cream-bg py-xl">
         <div className="max-w-7xl mx-auto px-8 text-center">
           <span className="font-label-sm text-secondary uppercase tracking-[0.2em] mb-4 block font-semibold">
@@ -45,7 +70,7 @@ export default function ContactPage() {
                   {c.icon}
                 </span>
               </div>
-              <h3 className="font-headline-sm mb-4 font-bold text-xl">{c.title}</h3>
+              <h2 className="font-headline-sm mb-4 font-bold text-xl">{c.title}</h2>
               {c.href ? (
                 <a className="text-on-surface-variant hover:text-tertiary" href={c.href}>
                   {c.body}

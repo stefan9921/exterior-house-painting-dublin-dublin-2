@@ -1,41 +1,102 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { areas, business } from "@/lib/business";
+import { getAreaIntro } from "@/lib/areaContent";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import {
+  JsonLd,
+  breadcrumbSchema,
+  faqPageSchema,
+  serviceSchema,
+} from "@/components/JsonLd";
 
 export function generateStaticParams() {
   return areas.map((a) => ({ slug: a.slug }));
 }
 
-export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
   const { slug } = await props.params;
   const area = areas.find((a) => a.slug === slug);
   if (!area) return {};
+  const url = `${business.siteUrl}/areas/${slug}/`;
+  const title = `Painters ${area.name} | Exterior House Painting ${area.name}`;
+  const description = `Local painters in ${area.name} delivering exterior, interior and full-house painting. Same insured Dublin crew, fixed-price quotes within 24 hours.`;
   return {
-    title: `Painters ${area.name} | Exterior House Painting ${area.name}`,
-    description: `Local painters in ${area.name} delivering exterior and interior painting, decorating, and repaints. Same crew that serves Dublin 2 — fully insured, free quotes.`,
+    title,
+    description,
+    alternates: { canonical: `/areas/${slug}/` },
+    openGraph: { title, description, url, type: "article" },
   };
 }
 
-const heroImg =
-  "https://images.unsplash.com/photo-1583845112203-29329902332e?auto=format&fit=crop&w=1200&q=80";
-const craftsmanImg =
-  "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=1200&q=80";
 const projectImgs = [
-  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1503594384566-461fe158e797?auto=format&fit=crop&w=900&q=80",
+  "/images/project-1.jpg",
+  "/images/project-2.jpg",
+  "/images/project-3.jpg",
 ];
 
-export default async function AreaPage(props: { params: Promise<{ slug: string }> }) {
+export default async function AreaPage(
+  props: { params: Promise<{ slug: string }> }
+) {
   const { slug } = await props.params;
   const area = areas.find((a) => a.slug === slug);
   if (!area) notFound();
 
   const others = areas.filter((a) => a.slug !== area.slug).slice(0, 6);
+  const intro = getAreaIntro(slug);
+  const pageUrl = `${business.siteUrl}/areas/${slug}/`;
+
+  const trail = [
+    { name: "Home", href: "/" },
+    { name: "Areas", href: "/areas/" },
+    { name: area.name, href: `/areas/${slug}/` },
+  ];
+
+  const faqs = [
+    {
+      q: `How much does it cost to paint a house in ${area.name}?`,
+      a: `Pricing in ${area.name} depends on property size and surface condition. Most 3-bed semi exteriors fall €1,800–€2,500 including prep, primer and two coats of weather-shield masonry paint. Larger detached homes with scaffolding €2,600–€5,000. We provide a free written fixed-price quote within 24 hours of a site visit.`,
+    },
+    {
+      q: `How long does an exterior painting project take in ${area.name}?`,
+      a: "Most 3-bed semis take 3–5 working days, weather permitting. Larger detached homes 5–7 working days. Commercial properties are scheduled around your trading hours.",
+    },
+    {
+      q: "Do you offer warranties on your workmanship?",
+      a: "Yes — every exterior repaint comes with a 5-year workmanship warranty, on top of the paint manufacturer's product guarantee. Interior decorating is warranted for 2 years.",
+    },
+    {
+      q: `Are you fully insured to work in ${area.name}?`,
+      a: "Absolutely. We carry €10M public liability and full employer's liability cover, in force on every job we do across Dublin and the Greater Dublin region.",
+    },
+  ];
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema(
+          trail.map((t) => ({
+            name: t.name,
+            url: `${business.siteUrl}${t.href}`,
+          }))
+        )}
+      />
+      <JsonLd
+        data={serviceSchema({
+          name: `Painters ${area.name}`,
+          description: `Exterior, interior and full-house painting in ${area.name}, Greater Dublin region.`,
+          url: pageUrl,
+          areaServed: [area.name, "Dublin", "Greater Dublin"],
+        })}
+      />
+      <JsonLd data={faqPageSchema(faqs)} />
+
+      <Breadcrumbs trail={trail} />
+
       {/* LOCAL HERO */}
       <section className="bg-white py-xl">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-12 items-center">
@@ -47,9 +108,8 @@ export default async function AreaPage(props: { params: Promise<{ slug: string }
               Painters in {area.name}
             </h1>
             <p className="text-on-surface-variant font-body-lg mb-8 max-w-lg">
-              Professional local painting crew serving {area.name} with precision and care.
-              Transform your home&apos;s exterior with Dublin&apos;s trusted craftsmanship. Get
-              your free quote today.
+              {intro.intro} Free written quotes within 24 hours, fully insured,
+              on-time delivery from Dublin&apos;s most trusted painting crew.
             </p>
             <div className="flex flex-wrap gap-4 mb-8">
               <Link
@@ -77,10 +137,12 @@ export default async function AreaPage(props: { params: Promise<{ slug: string }
             </div>
           </div>
           <div className="relative h-[400px] rounded-xl overflow-hidden shadow-xl">
-            <img
-              src={heroImg}
-              alt={`Painters serving ${area.name}`}
-              className="w-full h-full object-cover"
+            <Image
+              src="/images/hero-house.jpg"
+              alt={`Painters serving ${area.name} — Exterior House Painting Dublin`}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-primary/5 pointer-events-none"></div>
           </div>
@@ -105,6 +167,36 @@ export default async function AreaPage(props: { params: Promise<{ slug: string }
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* LOCAL CONTEXT / LANDMARKS */}
+      <section className="bg-white py-xl">
+        <div className="max-w-4xl mx-auto px-6 space-y-5 text-on-surface-variant font-body-lg">
+          <h2 className="font-headline-lg text-2xl md:text-3xl mb-2 text-on-surface">
+            Local painters covering {area.name}
+          </h2>
+          <p>
+            Operating from Grand Canal Dock in Dublin 2, our crew runs to{" "}
+            {area.name} throughout the week — usually past {intro.landmarks}. We
+            keep response time tight: free site visits within 24 hours, written
+            fixed-price quotes the same day, scheduled start within 2–3 weeks
+            depending on weather and the current job book.
+          </p>
+          <p>
+            Every job in {area.name} gets the same in-house painter team —
+            never subcontracted, never swapped halfway through. We&apos;re
+            insured to €10M, SafePass-trained, and we leave the site cleaner
+            than we found it. References from recent {area.name} customers
+            available on request.
+          </p>
+          <p>
+            Painters {area.name} homeowners book for: full exterior repaints,
+            render and masonry coatings, eaves, soffits and fascias, sash
+            windows and front doors, full interior decorating, hall-stairs-and-
+            landing refreshes, kitchen and bathroom paintwork, wallpapering,
+            and project-managed contracts for landlords and property managers.
+          </p>
         </div>
       </section>
 
@@ -160,9 +252,11 @@ export default async function AreaPage(props: { params: Promise<{ slug: string }
       <section className="soft-cream-bg py-xl">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-16 items-center">
           <div className="rounded-xl overflow-hidden shadow-lg border-8 border-white">
-            <img
-              src={craftsmanImg}
+            <Image
+              src="/images/painter-craftsman.jpg"
               alt={`Professional painter at work in ${area.name}`}
+              width={1200}
+              height={838}
               className="w-full h-[500px] object-cover"
             />
           </div>
@@ -202,9 +296,11 @@ export default async function AreaPage(props: { params: Promise<{ slug: string }
             {projectImgs.map((img, i) => (
               <div key={i} className="group cursor-pointer">
                 <div className="relative rounded-xl overflow-hidden h-64 mb-4">
-                  <img
+                  <Image
                     src={img}
-                    alt={`Painted property in ${area.name}`}
+                    alt={`Painted property in ${area.name}, painters ${area.name.toLowerCase()}`}
+                    width={900}
+                    height={600}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-4 py-2 rounded-lg text-sm font-bold shadow-sm">
@@ -244,27 +340,14 @@ export default async function AreaPage(props: { params: Promise<{ slug: string }
             Painting in {area.name} — FAQs
           </h2>
           <div className="space-y-4">
-            {[
-              {
-                q: `How much does it cost to paint a house in ${area.name}?`,
-                a: "Pricing depends on the size of the property and the current condition of the surfaces. We offer free, no-obligation site consultations to provide an accurate fixed-price quote.",
-              },
-              {
-                q: "How long does a typical exterior painting project take?",
-                a: "Most 3-bed semis take 3–5 working days, weather permitting. Larger detached homes 5–7 working days.",
-              },
-              {
-                q: "Do you offer warranties on your workmanship?",
-                a: "Yes — every exterior repaint comes with a workmanship warranty, on top of the paint manufacturer's product guarantee.",
-              },
-            ].map((f, i) => (
+            {faqs.map((f, i) => (
               <details
                 key={i}
                 className="bg-white rounded-xl border border-outline-variant overflow-hidden group"
                 {...(i === 0 ? { open: true } : {})}
               >
                 <summary className="w-full px-8 py-6 text-left flex justify-between items-center cursor-pointer list-none">
-                  <span className="font-bold text-lg font-headline-sm">{f.q}</span>
+                  <h3 className="font-bold text-lg font-headline-sm m-0">{f.q}</h3>
                   <span className="material-symbols-outlined text-primary-container font-black group-open:rotate-180 transition-transform">
                     expand_more
                   </span>
@@ -289,6 +372,14 @@ export default async function AreaPage(props: { params: Promise<{ slug: string }
                 {i < others.length - 1 && <span className="text-slate-300">•</span>}
               </span>
             ))}
+          </div>
+          <div className="mt-8">
+            <Link
+              href="/areas/"
+              className="inline-block border-2 border-on-surface px-6 py-3 rounded-lg font-bold hover:bg-on-surface hover:text-white transition-all"
+            >
+              See all areas
+            </Link>
           </div>
         </div>
       </section>

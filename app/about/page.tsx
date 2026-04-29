@@ -1,19 +1,43 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { business } from "@/lib/business";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { JsonLd, breadcrumbSchema } from "@/components/JsonLd";
+
+const PAGE_URL = `${business.siteUrl}/about/`;
 
 export const metadata: Metadata = {
-  title: "About Exterior House Painting Dublin",
+  title: "About Us | Exterior House Painting Dublin",
   description:
-    "Family-run Dublin painting company based in Grand Canal Dock. Insured, vetted, decade of finishes across Dublin 2 and Greater Dublin.",
+    "Family-run Dublin painting company based in Grand Canal Dock. Insured, vetted, decade of finishes across Dublin 2 and Greater Dublin. Meet the team.",
+  alternates: { canonical: "/about/" },
+  openGraph: {
+    title: "About Us | Exterior House Painting Dublin",
+    description:
+      "Family-run Dublin painting company based in Grand Canal Dock. Decade of finishes across Dublin 2 and Greater Dublin.",
+    url: PAGE_URL,
+  },
 };
 
-const aboutImg =
-  "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=1400&q=80";
-
 export default function AboutPage() {
+  const trail = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about/" },
+  ];
+
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema(
+          trail.map((t) => ({
+            name: t.name,
+            url: `${business.siteUrl}${t.href}`,
+          }))
+        )}
+      />
+      <Breadcrumbs trail={trail} />
+
       <section className="soft-cream-bg py-xl">
         <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
@@ -24,14 +48,15 @@ export default function AboutPage() {
               About {business.name}
             </h1>
             <p className="font-body-lg text-on-surface-variant mb-6">
-              We are a family-run Dublin painting company based in Grand Canal Dock, with
-              a decade of finishes across Dublin 2 and Greater Dublin. Insured, vetted,
+              We are a family-run Dublin painting company based at 77 Sir John
+              Rogerson&apos;s Quay in Grand Canal Dock. A decade of finishes
+              across Dublin 2 and the Greater Dublin region. Insured, vetted,
               and proud of every facade we paint.
             </p>
             <p className="font-body-lg text-on-surface-variant mb-8">
-              Our crew handles everything from Georgian terraces in the city centre to
-              suburban semis in Tallaght, Swords, Dundrum and beyond — interior, exterior,
-              residential and commercial.
+              Our crew handles everything from Georgian terraces in the city
+              centre to suburban semis in Tallaght, Swords, Dundrum and
+              beyond — interior, exterior, residential and commercial.
             </p>
             <Link
               href="/contact/"
@@ -41,8 +66,51 @@ export default function AboutPage() {
             </Link>
           </div>
           <div className="rounded-2xl overflow-hidden shadow-2xl">
-            <img src={aboutImg} alt="Our painting team at work" className="w-full h-[500px] object-cover" />
+            <Image
+              src="/images/painter-craftsman.jpg"
+              alt="The Exterior House Painting Dublin team at work on a Dublin 2 exterior"
+              width={1400}
+              height={978}
+              className="w-full h-[500px] object-cover"
+            />
           </div>
+        </div>
+      </section>
+
+      {/* Story */}
+      <section className="bg-white py-xl">
+        <div className="max-w-4xl mx-auto px-8 space-y-5 text-on-surface-variant font-body-lg">
+          <h2 className="font-headline-lg text-2xl md:text-3xl mb-2 text-on-surface">
+            Our story
+          </h2>
+          <p>
+            Exterior House Painting Dublin started a decade ago as a two-person
+            crew working out of a van in Dublin 2. Word-of-mouth in Grand Canal
+            Dock, Ranelagh and Rathmines built the business — exterior
+            repaints, then full-house interiors, then commercial fit-outs and
+            apartment-block contracts. Today the team handles dozens of
+            properties a year, and most of our work still comes from referrals.
+          </p>
+          <p>
+            We&apos;re registered painters and decorators, SafePass-trained,
+            and carry €10M public liability cover plus full employer&apos;s
+            liability insurance. Every painter on the crew is in-house — we
+            don&apos;t subcontract. That&apos;s the only way to guarantee the
+            quality is consistent, job after job.
+          </p>
+          <h2 className="font-headline-lg text-2xl md:text-3xl mb-2 text-on-surface">
+            Our values
+          </h2>
+          <p>
+            <strong>Show up on time.</strong> If we say we&apos;ll be on site
+            at 8AM Monday, we are. <strong>Quote what we charge.</strong> Our
+            written quotes are fixed-price — no surprise extras at the end of
+            the job. <strong>Leave it cleaner than we found it.</strong> Drop
+            sheets, masking, dust-extracted sanding, and a daily clean-down.{" "}
+            <strong>Stand behind the work.</strong> A 5-year workmanship
+            warranty on exterior masonry repaints, on top of the paint
+            manufacturer&apos;s product guarantee.
+          </p>
         </div>
       </section>
 

@@ -1,14 +1,31 @@
 import type { Metadata } from "next";
 import { business } from "@/lib/business";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { JsonLd, breadcrumbSchema } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
     "Service terms covering quotes, deposits, scheduling, snags, and warranties for Dublin painting work.",
+  alternates: { canonical: "/terms/" },
 };
 
 export default function TermsPage() {
+  const trail = [
+    { name: "Home", href: "/" },
+    { name: "Terms of Service", href: "/terms/" },
+  ];
   return (
+    <>
+      <JsonLd
+        data={breadcrumbSchema(
+          trail.map((t) => ({
+            name: t.name,
+            url: `${business.siteUrl}${t.href}`,
+          }))
+        )}
+      />
+      <Breadcrumbs trail={trail} />
     <section className="bg-white py-xl">
       <div className="max-w-3xl mx-auto px-8">
         <h1 className="font-display-xl text-4xl md:text-5xl mb-6">Terms of Service</h1>
@@ -84,5 +101,6 @@ export default function TermsPage() {
         </div>
       </div>
     </section>
+    </>
   );
 }

@@ -1,28 +1,65 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { business, services, areas } from "@/lib/business";
+import {
+  JsonLd,
+  breadcrumbSchema,
+  faqPageSchema,
+} from "@/components/JsonLd";
+
+const PAGE_URL = business.siteUrl + "/";
 
 export const metadata: Metadata = {
   title: "Exterior House Painting Dublin | Exterior Painters Dublin 2",
   description:
     "Exterior House Painting Dublin delivers durable, weather-ready exterior paintwork across Dublin 2 and Greater Dublin. Free quotes, 7-day availability, call +353 1 230 8892.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Exterior House Painting Dublin | Exterior Painters Dublin 2",
+    description:
+      "Durable, weather-ready exterior paintwork across Dublin 2 and Greater Dublin. Free quotes, 7-day availability.",
+    url: PAGE_URL,
+  },
 };
 
-const heroImage =
-  "https://images.unsplash.com/photo-1503594384566-461fe158e797?auto=format&fit=crop&w=1600&q=80";
-const craftImage =
-  "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=1200&q=80";
+const homepageFaqs = [
+  {
+    q: "How much does it cost to paint a house in Dublin?",
+    a: "Pricing varies by property size and surface condition. A standard 3-bed semi exterior in Dublin typically falls between €1,800–€2,500. Interior-only 3-bed semis sit between €2,200–€3,200, while a full interior + exterior package is generally €4,500–€6,500. We provide a free written fixed-price quote within 24 hours of a site visit.",
+  },
+  {
+    q: "What time of year is best to paint a house?",
+    a: "April to September is ideal in Ireland — drier weather and consistent surface temperatures above 10°C let masonry paint cure properly. We can paint year-round given a stretch of three or more dry days; spring and early autumn are our busiest seasons in Dublin 2 and the Greater Dublin region.",
+  },
+  {
+    q: "Do you provide free estimates?",
+    a: "Yes. We offer 100% free, no-obligation quotes within 24 hours of site inspection. We can often provide a rough estimate from photos for smaller jobs.",
+  },
+  {
+    q: "Are you fully insured?",
+    a: "Absolutely. We carry €10M public liability and full employer's liability insurance for every Dublin painting job, residential or commercial.",
+  },
+];
 
 export default function HomePage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema([{ name: "Home", url: PAGE_URL }])}
+      />
+      <JsonLd data={faqPageSchema(homepageFaqs)} />
+
       {/* Hero Section */}
       <section className="relative h-[600px] flex items-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img
-            className="w-full h-full object-cover brightness-50"
-            src={heroImage}
-            alt="A grand Georgian terrace house in Dublin with fresh exterior paint"
+          <Image
+            src="/images/hero-house.jpg"
+            alt="A grand Georgian terrace house in Dublin 2 with a freshly painted exterior facade by Exterior House Painting Dublin"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover brightness-50"
           />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-8 w-full text-white">
@@ -33,7 +70,8 @@ export default function HomePage() {
             <p className="font-body-lg text-body-lg mb-8 opacity-90">
               Durable, weather-ready exterior paintwork across Dublin 2 and the
               Greater Dublin region. We protect your home with premium finishes
-              designed for the Irish climate.
+              designed for the Irish climate — from Georgian terraces in Grand
+              Canal Dock to suburban semis from Tallaght to Howth.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -69,6 +107,53 @@ export default function HomePage() {
               <span className="material-symbols-outlined text-primary-container">location_on</span>
               Dublin 2 Based
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Intro / Long-form copy */}
+      <section className="bg-white py-xl">
+        <div className="max-w-4xl mx-auto px-8">
+          <h2 className="font-headline-lg text-3xl md:text-headline-lg mb-6 text-center">
+            Dublin&apos;s Exterior House Painting Specialists
+          </h2>
+          <div className="space-y-5 text-on-surface-variant font-body-lg">
+            <p>
+              Exterior House Painting Dublin is a Dublin 2 painting and
+              decorating company that delivers durable, weather-shielded
+              exterior paintwork across the city and Greater Dublin. We are
+              exterior painters Dublin homeowners turn to for masonry, render,
+              eaves, soffits, fascias and door work — and we back every job
+              with a written fixed-price quote, full insurance, and a
+              workmanship warranty.
+            </p>
+            <p>
+              Our crew operates seven days a week, 8AM to 8PM, from our base
+              at 77 Sir John Rogerson&apos;s Quay in Grand Canal Dock. From
+              there we serve every postcode in Dublin 2, plus the wider
+              region: Tallaght, Swords, Lucan, Blanchardstown, Malahide,
+              Blackrock, Dundrum, Clontarf, Ranelagh, Rathmines, Sandyford,
+              Howth, Greystones, Bray, Naas, Maynooth, Celbridge, Drogheda,
+              Navan and Mullingar. Wherever you are in Greater Dublin, the
+              same insured, vetted in-house team turns up.
+            </p>
+            <p>
+              Exterior house painting in Dublin demands more than a coat of
+              paint. The Irish climate is hard on render — driving rain off
+              the Irish Sea, salt air on the coast, freeze-thaw in winter,
+              and chalking under summer UV. We prep, prime and apply the
+              right system for the substrate: Sandtex Ultra Smooth and
+              X-treme on smooth render, breathable specialist coatings on
+              pebbledash, Dulux Weathershield on woodwork. The result is an
+              exterior that holds its colour and sheds water for 7–10 years.
+            </p>
+            <p>
+              We also handle interior painting, full-house repaints,
+              commercial fit-outs, painter and decorator services,
+              wallpapering, and project-managed contracts for property
+              managers. Painters Dublin trusts under one roof — quote,
+              schedule, finish, sign-off.
+            </p>
           </div>
         </div>
       </section>
@@ -125,7 +210,7 @@ export default function HomePage() {
           </div>
           <div className="text-center mt-10">
             <Link
-              href="/#services"
+              href="/services/"
               className="inline-block border-2 border-on-surface px-8 py-3 rounded-lg font-bold hover:bg-on-surface hover:text-white transition-all"
             >
               View all services
@@ -138,10 +223,12 @@ export default function HomePage() {
       <section className="soft-cream-bg py-xl">
         <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-            <img
+            <Image
+              src="/images/painter-craftsman.jpg"
+              alt="A professional Dublin painter applying weather-shield masonry paint to a window frame"
+              width={1200}
+              height={838}
               className="w-full h-[500px] object-cover"
-              src={craftImage}
-              alt="A professional Dublin painter applying paint to a window frame"
             />
           </div>
           <div>
@@ -178,10 +265,11 @@ export default function HomePage() {
               Painters Serving All of Dublin
             </h2>
             <p className="text-on-surface-variant font-body-lg">
-              Specialising in Dublin 2 and the Greater Dublin Region
+              Specialising in Dublin 2 and the Greater Dublin Region — from
+              Grand Canal Dock to Howth, Bray to Maynooth, Drogheda to Navan.
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
             {areas.map((a) => (
               <Link
                 key={a.slug}
@@ -191,6 +279,14 @@ export default function HomePage() {
                 {a.name}
               </Link>
             ))}
+          </div>
+          <div className="text-center">
+            <Link
+              href="/areas/"
+              className="inline-block border-2 border-on-surface px-8 py-3 rounded-lg font-bold hover:bg-on-surface hover:text-white transition-all"
+            >
+              View all areas
+            </Link>
           </div>
         </div>
       </section>
@@ -239,12 +335,7 @@ export default function HomePage() {
             <div className="w-16 h-1 bg-primary-container mx-auto rounded-full"></div>
           </div>
           <div className="space-y-4">
-            {[
-              { q: "How much does it cost to paint a house in Dublin?", a: "Pricing varies by property size and surface condition. A standard 3-bed semi exterior typically falls between €1,800–€2,500. We provide a free written fixed-price quote within 24 hours." },
-              { q: "What time of year is best to paint a house?", a: "April–September is ideal in Ireland — drier weather and consistent temperatures above 10°C allow paint to cure properly. We can paint year-round given a few dry days in a row." },
-              { q: "Do you provide free estimates?", a: "Yes, we offer 100% free, no-obligation quotes within 24 hours of site inspection. We can often provide a rough estimate from photos." },
-              { q: "Are you fully insured?", a: "Absolutely. We carry comprehensive public liability and employer's liability insurance for full peace of mind." },
-            ].map((f, i) => (
+            {homepageFaqs.map((f, i) => (
               <details key={i} className="group border mist-grey-border rounded-xl" {...(i === 0 ? { open: true } : {})}>
                 <summary className="flex justify-between items-center p-6 cursor-pointer list-none font-headline-sm text-[18px] font-bold">
                   {f.q}
@@ -255,6 +346,14 @@ export default function HomePage() {
                 <div className="px-6 pb-6 text-on-surface-variant">{f.a}</div>
               </details>
             ))}
+          </div>
+          <div className="text-center mt-10">
+            <Link
+              href="/faq/"
+              className="text-tertiary font-bold hover:underline"
+            >
+              See all FAQs &rarr;
+            </Link>
           </div>
         </div>
       </section>

@@ -1,34 +1,50 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { business, services } from "@/lib/business";
 import { allServiceSlugs, getServiceContent } from "@/lib/serviceContent";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import {
+  JsonLd,
+  breadcrumbSchema,
+  faqPageSchema,
+  serviceSchema,
+} from "@/components/JsonLd";
 
 export function generateStaticParams() {
   return allServiceSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
   const { slug } = await props.params;
   const content = getServiceContent(slug);
   if (!content) return {};
+  const url = `${business.siteUrl}/services/${slug}/`;
   return {
     title: content.metaTitle,
     description: content.metaDescription,
+    alternates: { canonical: `/services/${slug}/` },
+    openGraph: {
+      title: content.metaTitle,
+      description: content.metaDescription,
+      url,
+      type: "article",
+    },
   };
 }
 
-const heroImg =
-  "https://images.unsplash.com/photo-1503594384566-461fe158e797?auto=format&fit=crop&w=1400&q=80";
-const craftsmanImg =
-  "https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=1200&q=80";
 const projectImgs = [
-  "https://images.unsplash.com/photo-1583845112203-29329902332e?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80",
+  "/images/project-1.jpg",
+  "/images/project-2.jpg",
+  "/images/project-3.jpg",
 ];
 
-export default async function ServicePage(props: { params: Promise<{ slug: string }> }) {
+export default async function ServicePage(
+  props: { params: Promise<{ slug: string }> }
+) {
   const { slug } = await props.params;
   const content = getServiceContent(slug);
   if (!content) notFound();
@@ -36,8 +52,34 @@ export default async function ServicePage(props: { params: Promise<{ slug: strin
     .map((s) => services.find((sv) => sv.slug === s))
     .filter(Boolean) as typeof services;
 
+  const pageUrl = `${business.siteUrl}/services/${slug}/`;
+  const trail = [
+    { name: "Home", href: "/" },
+    { name: "Services", href: "/services/" },
+    { name: content.title, href: `/services/${slug}/` },
+  ];
+
   return (
     <>
+      <JsonLd
+        data={breadcrumbSchema(
+          trail.map((t) => ({
+            name: t.name,
+            url: `${business.siteUrl}${t.href}`,
+          }))
+        )}
+      />
+      <JsonLd
+        data={serviceSchema({
+          name: content.title,
+          description: content.metaDescription,
+          url: pageUrl,
+        })}
+      />
+      <JsonLd data={faqPageSchema(content.faqs.slice(0, 5))} />
+
+      <Breadcrumbs trail={trail} />
+
       {/* HERO */}
       <section className="soft-cream-bg py-xl">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -70,15 +112,17 @@ export default async function ServicePage(props: { params: Promise<{ slug: strin
               </div>
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary-container">workspace_premium</span>
-                <span className="font-label-sm">10-Year Guarantee</span>
+                <span className="font-label-sm">Workmanship Guarantee</span>
               </div>
             </div>
           </div>
           <div className="hidden lg:block relative h-[400px]">
-            <img
-              src={heroImg}
-              alt={`${content.title} in Dublin`}
-              className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-2xl"
+            <Image
+              src="/images/hero-house.jpg"
+              alt={`${content.title} in Dublin — Exterior House Painting Dublin`}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover rounded-2xl shadow-2xl"
             />
           </div>
         </div>
@@ -107,6 +151,44 @@ export default async function ServicePage(props: { params: Promise<{ slug: strin
               <p className="text-on-surface-variant">{c.body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* LONG-FORM CONTENT */}
+      <section className="bg-white py-xl">
+        <div className="max-w-4xl mx-auto px-6 space-y-5 text-on-surface-variant font-body-lg">
+          <h2 className="font-headline-lg text-2xl md:text-3xl mb-2 text-on-surface">
+            About our {content.title.toLowerCase()} service in Dublin
+          </h2>
+          <p>
+            {content.intro} Whether you&apos;re in central Dublin 2, the
+            coastal villages of Howth and Malahide, or the commuter towns of
+            Naas, Maynooth and Drogheda, the same insured in-house crew turns
+            up to deliver consistent quality across every project.
+          </p>
+          <p>
+            Every {content.title.toLowerCase()} job starts with a free site
+            visit and a fixed-price written quote within 24 hours. We assess
+            substrate condition, identify prep work, recommend the right paint
+            system for the Irish climate, and give you a clear timeline. No
+            ladder-and-promise estimates — actual numbers, in writing.
+          </p>
+          <p>
+            Our painters work to a documented prep standard: power-wash where
+            needed, scrape failing paint, fill hairline cracks, stabilise
+            chalking surfaces with primer, mask thoroughly, and apply two
+            coats of premium paint. For exterior work in Dublin we lean on
+            Sandtex Ultra Smooth, Sandtex X-treme and Dulux Weathershield —
+            systems with a proven track record on Irish render and masonry.
+          </p>
+          <p>
+            We are fully insured (€10M public liability and full
+            employer&apos;s liability), SafePass-trained, and every job is
+            backed by a written workmanship warranty on top of the paint
+            manufacturer&apos;s product guarantee. Every painter on the team
+            is in-house — no subcontractors swapping in halfway through the
+            job.
+          </p>
         </div>
       </section>
 
@@ -141,9 +223,11 @@ export default async function ServicePage(props: { params: Promise<{ slug: strin
       <section className="py-xl max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div className="rounded-2xl overflow-hidden shadow-xl">
-            <img
-              src={craftsmanImg}
-              alt="A Dublin painter at work"
+            <Image
+              src="/images/painter-craftsman.jpg"
+              alt={`A Dublin painter at work on a ${content.title.toLowerCase()} job`}
+              width={1200}
+              height={838}
               className="w-full h-[600px] object-cover"
             />
           </div>
@@ -253,9 +337,11 @@ export default async function ServicePage(props: { params: Promise<{ slug: strin
             { area: "Stillorgan, Dublin 18", desc: "Weather-shield Coating", img: projectImgs[2] },
           ].map((p) => (
             <div key={p.area} className="group relative rounded-xl overflow-hidden aspect-square">
-              <img
+              <Image
                 src={p.img}
-                alt={`Recent project in ${p.area}`}
+                alt={`Recent ${content.title.toLowerCase()} project in ${p.area}`}
+                width={900}
+                height={900}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
@@ -301,7 +387,7 @@ export default async function ServicePage(props: { params: Promise<{ slug: strin
               {...(i === 0 ? { open: true } : {})}
             >
               <summary className="flex justify-between items-center p-6 cursor-pointer list-none">
-                <span className="font-headline-sm text-lg font-bold">{f.q}</span>
+                <h3 className="font-headline-sm text-lg font-bold m-0">{f.q}</h3>
                 <span className="material-symbols-outlined text-primary-container group-open:rotate-180 transition-transform">
                   expand_more
                 </span>
@@ -326,6 +412,18 @@ export default async function ServicePage(props: { params: Promise<{ slug: strin
                 {r.title}
               </Link>
             ))}
+            <Link
+              href="/services/"
+              className="bg-surface-container-high px-4 py-2 rounded-full text-sm font-semibold hover:bg-primary-container transition-colors"
+            >
+              All services
+            </Link>
+            <Link
+              href="/areas/"
+              className="bg-surface-container-high px-4 py-2 rounded-full text-sm font-semibold hover:bg-primary-container transition-colors"
+            >
+              Areas covered
+            </Link>
           </div>
         </section>
       )}

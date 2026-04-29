@@ -1,14 +1,31 @@
 import type { Metadata } from "next";
 import { business } from "@/lib/business";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { JsonLd, breadcrumbSchema } from "@/components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
     "How Exterior House Painting Dublin handles personal data submitted via quotes, calls, and emails.",
+  alternates: { canonical: "/privacy-policy/" },
 };
 
 export default function PrivacyPage() {
+  const trail = [
+    { name: "Home", href: "/" },
+    { name: "Privacy Policy", href: "/privacy-policy/" },
+  ];
   return (
+    <>
+      <JsonLd
+        data={breadcrumbSchema(
+          trail.map((t) => ({
+            name: t.name,
+            url: `${business.siteUrl}${t.href}`,
+          }))
+        )}
+      />
+      <Breadcrumbs trail={trail} />
     <section className="bg-white py-xl">
       <div className="max-w-3xl mx-auto px-8">
         <h1 className="font-display-xl text-4xl md:text-5xl mb-6">Privacy Policy</h1>
@@ -65,5 +82,6 @@ export default function PrivacyPage() {
         </div>
       </div>
     </section>
+    </>
   );
 }

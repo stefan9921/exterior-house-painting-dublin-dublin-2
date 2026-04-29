@@ -10,6 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/about/",
     "/contact/",
     "/faq/",
+    "/services/",
+    "/areas/",
     "/privacy-policy/",
     "/terms/",
   ];
@@ -21,6 +23,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${base}${p}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
-    priority: p === "/" ? 1 : 0.7,
+    priority:
+      p === "/"
+        ? 1
+        : p === "/services/" || p === "/areas/"
+        ? 0.9
+        : p.startsWith("/services/") || p.startsWith("/areas/")
+        ? 0.8
+        : 0.6,
   }));
 }

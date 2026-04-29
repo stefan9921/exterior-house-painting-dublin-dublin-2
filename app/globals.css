@@ -2,7 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+/*
+ * Material Symbols font is injected at runtime by <IconFontLoader /> in app/layout.tsx
+ * to keep the font CSS off the critical render path. Do NOT add @import here.
+ */
 
 :root {
   --background: #fcf9f8;

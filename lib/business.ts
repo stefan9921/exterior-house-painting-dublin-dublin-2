@@ -11,7 +11,12 @@ export const business = {
   phoneDisplay: "+353 1 230 8892",
   email: "info@exteriorhousepaintingdublin.ie",
   hours: "Mon-Sun 8AM-8PM",
-  siteUrl: "https://exterior-house-painting-dublin-dublin-2.vercel.app",
+  // SITE_URL is read from NEXT_PUBLIC_SITE_URL with a Vercel preview default.
+  // Set NEXT_PUBLIC_SITE_URL=https://yourdomain.ie in production once a custom
+  // domain is wired up. Trailing slash intentionally omitted.
+  siteUrl:
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "https://exterior-house-painting-dublin-dublin-2.vercel.app",
 };
 
 export const services = [
