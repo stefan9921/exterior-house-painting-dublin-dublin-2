@@ -16,7 +16,7 @@ export const business = {
   // domain is wired up. Trailing slash intentionally omitted.
   siteUrl:
     process.env.NEXT_PUBLIC_SITE_URL ??
-    "https://exterior-house-painting-dublin-dublin-2.vercel.app",
+    "https://www.exteriorhousepaintingdublin.ie",
 };
 
 export const services = [
